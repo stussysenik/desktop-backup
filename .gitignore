@@ -1,0 +1,7 @@
+# Desktop Backup & Space Reclaimer - Local Configuration
+# This file contains machine-specific project lists and is gitignored.
+
+config/stale-projects.conf
+logs/
+reports/
+*.log

@@ -1,0 +1,22 @@
+# Stale project scan example
+
+```
+=== DESKTOP STALE PROJECT SCAN ===
+Scan date: Wed Apr 15 02:49:38 CEST 2026
+Cutoff: 2026-03-16 (30 days ago)
+
+--- TIER 1: Clean git (safe to archive) ---
+  cmux | 323M | https://github.com/user/cmux.git | dirty:0 | ahead:0
+  origami | 104M | https://github.com/user/origami.git | dirty:0 | ahead:0
+
+--- TIER 2: Dirty git (needs push) ---
+  daily | 96M | https://github.com/user/daily.git | dirty:1 | ahead:1
+  fulala-live-menu | 345M | https://github.com/user/fulala-live-menu.git | dirty:20 | ahead:0
+
+--- TIER 3: No-git (backup to GDrive) ---
+  symphony-setup | 8.4G
+  cc-config-backup | 6.0M
+
+--- FREE SPACE ESTIMATE ---
+  Estimated recoverable: 13668 MB (~13 GB)
+```

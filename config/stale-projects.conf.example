@@ -1,0 +1,30 @@
+# Stale projects configuration
+# Copy this to stale-projects.conf and edit for your machine
+# This file is gitignored — your project lists stay local
+
+# Tier 1: Clean git repos (fully pushed to GitHub, safe to archive after GDrive backup)
+# One project name per line, matching the folder name on your Desktop
+TIER1_CLEAN_GIT=(
+    # "example-project"
+    # "another-clean-repo"
+)
+
+# Tier 2: Dirty git repos (uncommitted changes, need commit+push before backup)
+TIER2_DIRTY_GIT=(
+    # "project-with-changes"
+)
+
+# Tier 3: No-git folders (backed up to GDrive only, no GitHub safety net)
+TIER3_NO_GIT=(
+    # "old-notes"
+    # "random-folder"
+)
+
+# Stale threshold in days (default: 30)
+STALE_DAYS=30
+
+# rclone remote name (default: gdrive)
+RCLONE_REMOTE=gdrive
+
+# Desktop path (default: ~/Desktop)
+DESKTOP_PATH=~/Desktop
