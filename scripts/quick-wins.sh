@@ -84,14 +84,22 @@ case "${1:-menu}" in
             ~/Library/ScreenRecordings/ \
             "${RCLONE_REMOTE}backups/desktop-cleanup/ScreenRecordings/" \
             --checksum \
-            --transfers 4 \
+            --transfers 12 \
             --checkers 16 \
-            --drive-chunk-size 8M \
+            --drive-chunk-size 64M \
+            --drive-upload-cutoff 8M \
+            --drive-pacer-min-sleep 10ms \
+            --drive-pacer-burst 200 \
+            --multi-thread-streams 4 \
+            --use-mmap \
             --exclude ".DS_Store" \
             --log-file="$PROJECT_DIR/logs/screenrecordings-rclone.log" \
             --log-level INFO \
             --retries 5 \
             --retries-sleep 15s \
+            --low-level-retries 10 \
+            --stats 30s \
+            --stats-log-level NOTICE \
             --progress
         echo -e "${GREEN}✓ ScreenRecordings backed up${NC}"
         echo ""

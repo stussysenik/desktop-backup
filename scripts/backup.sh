@@ -167,7 +167,40 @@ backup_to_gdrive() {
 
     log "${BLUE}Backing up to GDrive... (dry_run=$dry)${NC}"
 
-    local excludes="--exclude-from=$CONFIG_DIR/rclone-excludes.txt"
+    local RCLONE_COMMON_FLAGS=(
+        --checksum
+        --transfers 12
+        --checkers 16
+        --drive-chunk-size 64M
+        --drive-upload-cutoff 8M
+        --drive-pacer-min-sleep 10ms
+        --drive-pacer-burst 200
+        --multi-thread-streams 4
+        --use-mmap
+        --exclude ".DS_Store"
+        --exclude "Thumbs.db"
+        --exclude "node_modules/**"
+        --exclude ".next/**"
+        --exclude ".nuxt/**"
+        --exclude "__pycache__/**"
+        --exclude "*.pyc"
+        --exclude "*.map"
+        --exclude ".env"
+        --exclude ".env.local"
+        --exclude "dist/**"
+        --exclude "build/**"
+        --exclude ".cache/**"
+        --exclude "DerivedData/**"
+        --exclude "*.xcuserdata"
+        --exclude "*.xcuserstate"
+        --log-file="$LOG_DIR/rclone-${TIMESTAMP}.log"
+        --log-level INFO
+        --retries 5
+        --retries-sleep 15s
+        --low-level-retries 10
+        --stats 30s
+        --stats-log-level NOTICE
+    )
 
     for name in "${TIER1_CLEAN_GIT[@]}" "${TIER2_DIRTY_GIT[@]}"; do
         dir="$DESKTOP_PATH/$name"
@@ -178,18 +211,7 @@ backup_to_gdrive() {
         rclone $rclone_action \
             "$dir/" \
             "$GDRIVE_BASE/$name/" \
-            --checksum \
-            --transfers 8 \
-            --checkers 16 \
-            --drive-chunk-size 8M \
-            --exclude ".DS_Store" \
-            --exclude "node_modules/**" \
-            --exclude ".next/**" \
-            --log-file="$LOG_DIR/rclone-${TIMESTAMP}.log" \
-            --log-level INFO \
-            --retries 5 \
-            --retries-sleep 15s \
-            --low-level-retries 10 \
+            "${RCLONE_COMMON_FLAGS[@]}" \
             2>&1 || warn "  Issues with $name (check log)"
     done
 
@@ -202,17 +224,7 @@ backup_to_gdrive() {
         rclone $rclone_action \
             "$dir/" \
             "$GDRIVE_NO_GIT/$name/" \
-            --checksum \
-            --transfers 8 \
-            --checkers 16 \
-            --drive-chunk-size 8M \
-            --exclude ".DS_Store" \
-            --exclude "node_modules/**" \
-            --log-file="$LOG_DIR/rclone-${TIMESTAMP}.log" \
-            --log-level INFO \
-            --retries 5 \
-            --retries-sleep 15s \
-            --low-level-retries 10 \
+            "${RCLONE_COMMON_FLAGS[@]}" \
             2>&1 || warn "  Issues with $name (check log)"
     done
 }
@@ -229,6 +241,25 @@ verify_backups() {
 
     log "${BLUE}Verifying backups...${NC}"
 
+    local VERIFY_EXCLUDES=(
+        --exclude ".DS_Store"
+        --exclude "Thumbs.db"
+        --exclude "node_modules/**"
+        --exclude ".next/**"
+        --exclude ".nuxt/**"
+        --exclude "__pycache__/**"
+        --exclude "*.pyc"
+        --exclude "*.map"
+        --exclude ".env"
+        --exclude ".env.local"
+        --exclude "dist/**"
+        --exclude "build/**"
+        --exclude ".cache/**"
+        --exclude "DerivedData/**"
+        --exclude "*.xcuserdata"
+        --exclude "*.xcuserstate"
+    )
+
     for name in "${TIER1_CLEAN_GIT[@]}" "${TIER2_DIRTY_GIT[@]}"; do
         dir="$DESKTOP_PATH/$name"
         [[ ! -d "$dir" ]] && continue
@@ -237,9 +268,7 @@ verify_backups() {
             "$dir/" \
             "$GDRIVE_BASE/$name/" \
             --checksum \
-            --exclude ".DS_Store" \
-            --exclude "node_modules/**" \
-            --exclude ".next/**" \
+            "${VERIFY_EXCLUDES[@]}" \
             --checkers 16 \
             2>&1 | tail -5 | tee -a "$LOG_DIR/verify-${TIMESTAMP}.log"
     done
@@ -252,8 +281,7 @@ verify_backups() {
             "$dir/" \
             "$GDRIVE_NO_GIT/$name/" \
             --checksum \
-            --exclude ".DS_Store" \
-            --exclude "node_modules/**" \
+            "${VERIFY_EXCLUDES[@]}" \
             --checkers 16 \
             2>&1 | tail -5 | tee -a "$LOG_DIR/verify-${TIMESTAMP}.log"
     done
